@@ -11,6 +11,7 @@ import (
 	"strings"
 	"math/big"
 	"os"
+	"flag"
 	"regexp"
 	"github.com/chromedp/chromedp"
 	petname "github.com/dustinkirkland/golang-petname"
@@ -57,6 +58,8 @@ func generateNumberStarting() string {
 func main() {
 
          
+	var outputFile = flag.String("o", "UmbrellaApiKey.txt", "Chemin du fichier de sortie")
+	flag.Parse()
 
 	go DnsSRV.StartDns()
     store := Mail.NewMailList()
@@ -89,7 +92,7 @@ func main() {
 		}
 	}
 	DataAccount = ActivationLink(DataAccount,activationLink)
-	GetApiKey(DataAccount)
+	GetApiKey(DataAccount,*outputFile)
 }
 
 func Inscription() Account {
@@ -189,7 +192,7 @@ func ActivationLink(account Account,domain string) Account {
 
 
 
-func GetApiKey(account Account) Account {
+func GetApiKey(account Account, file string) Account {
 	user := account.Mail
 	pass := account.Password
 
@@ -246,8 +249,8 @@ func GetApiKey(account Account) Account {
 	for _, uuid := range uuids {
 		account.ApiKey = uuid
 		log.Println("[+] Success API Key found : "+uuid)
-		saveToFile(uuid,"UmbrellaApiKey.txt")
-		log.Println("[+] API Key stored in  : UmbrellaApiKey.txt")
+		saveToFile(uuid,file)
+		log.Println("[+] API Key stored in  : "+flag)
 		return account
 	}
 		log.Println("[-] Token not found")
